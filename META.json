@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "browser for connpass(R)",
    "author" : [
       "karupanerura <karupa@cpan.org>"
    ],
@@ -42,6 +42,13 @@
       },
       "runtime" : {
          "requires" : {
+            "HTTP::Request::Common" : "0",
+            "JSON" : "2",
+            "LWP::UserAgent" : "0",
+            "Time::HiRes" : "0",
+            "WWW::Mechanize" : "0",
+            "Web::Query" : "0",
+            "parent" : "0",
             "perl" : "5.008001"
          }
       },
@@ -52,6 +59,17 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/karupanerura/WWW-Connpass/issues"
+      },
+      "homepage" : "https://github.com/karupanerura/WWW-Connpass",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/karupanerura/WWW-Connpass.git",
+         "web" : "https://github.com/karupanerura/WWW-Connpass"
+      }
+   },
    "version" : "0.01",
    "x_authority" : "cpan:KARUPA",
    "x_serialization_backend" : "JSON::PP version 2.27300"

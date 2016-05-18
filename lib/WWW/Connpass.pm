@@ -31,7 +31,7 @@ __END__
 
 =head1 NAME
 
-WWW::Connpass - It's new $module
+WWW::Connpass - browser for connpass(R)
 
 =head1 SYNOPSIS
 
@@ -51,7 +51,7 @@ WWW::Connpass - It's new $module
 
 =head1 DESCRIPTION
 
-WWW::Connpass is ...
+WWW::Connpass is browser for L<http://connpass.com/>.
 
 =head1 LICENSE
 
