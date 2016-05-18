@@ -29,6 +29,8 @@ __END__
 
 =encoding utf-8
 
+=for stopwords connpass(R)
+
 =head1 NAME
 
 WWW::Connpass - browser for connpass(R)
