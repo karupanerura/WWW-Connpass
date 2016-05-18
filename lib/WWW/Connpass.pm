@@ -5,7 +5,24 @@ use warnings;
 
 our $VERSION = "0.01";
 
+use LWP::UserAgent;
+use WWW::Connpass::Session;
 
+sub new {
+    my $class = shift;
+
+    my $user_agent = "$class/".$class->VERSION;
+    return bless {
+        user_agent => $user_agent,
+        interval   => 1,
+        @_,
+    } => $class;
+}
+
+sub login {
+    my ($self, $user, $pass) = @_;
+    return WWW::Connpass::Session->new($user, $pass, $self);
+}
 
 1;
 __END__
@@ -19,6 +36,18 @@ WWW::Connpass - It's new $module
 =head1 SYNOPSIS
 
     use WWW::Connpass;
+
+    my $client = WWW::Connpass->new;
+    my $session = $client->login('username', 'password');
+    my @events = $session->fetch_organized_events();
+    for my $event (@events) {
+        # ...
+    }
+
+    my $event = $session->new_event(title => '');
+    $event = $event->edit(
+        ...
+    );
 
 =head1 DESCRIPTION
 
