@@ -5,6 +5,10 @@ use warnings;
 use parent qw/WWW::Mechanize/;
 
 use Time::HiRes qw/gettimeofday tv_interval/;
+use HTTP::Request;
+use JSON 2;
+
+my $_JSON = JSON->new->utf8;
 
 sub new {
     my ($class, %args) = @_;
@@ -38,6 +42,24 @@ sub extract_cookie {
     });
 
     return $result;
+}
+
+sub _csrf_token {
+    my $self = shift;
+    $self->{_csrf_token} ||= $self->extract_cookie('connpass-csrftoken');
+}
+
+sub request_like_xhr {
+    my ($self, $method, $url, $param) = @_;
+    my $content = $_JSON->encode($param);
+
+    my $req = HTTP::Request->new($method, $url, [
+        'Content-Type'     => 'application/json',
+        'Content-Length'   => length $content,
+        'X-CSRFToken'      => $self->_csrf_token(),
+        'X-Requested-With' => 'XMLHttpRequest',
+    ], $content);
+    return $self->request($req);
 }
 
 1;

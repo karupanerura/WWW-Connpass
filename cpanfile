@@ -1,7 +1,8 @@
-requires 'HTTP::Request::Common';
+requires 'HTTP::Request';
 requires 'JSON', '2';
-requires 'LWP::UserAgent';
+requires 'Module::Load';
 requires 'Time::HiRes';
+requires 'URI';
 requires 'WWW::Mechanize';
 requires 'Web::Query';
 requires 'parent';

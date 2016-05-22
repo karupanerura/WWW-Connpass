@@ -8,6 +8,7 @@ sub new {
     my ($class, %args) = @_;
     return bless {
         %args,
+        waitlist_count => [],
     } => $class;
 }
 
@@ -50,7 +51,41 @@ sub sub_title                         { shift->{event}->{sub_title}             
 sub title                             { shift->{event}->{title}                             }
 
 sub waitlist_count {
-    map { WWW::Connpass::Event::Waitlist->new($_) } @{ shift->{event}->{waitlist_count} }
+    my $self = shift;
+    my $waitlist_count = $self->{waitlist_count} ||= [
+        map { WWW::Connpass::Event::Waitlist->new($_) } @{ $self->{event}->{waitlist_count} }
+    ];
+    return @$waitlist_count;
+}
+
+sub update_waitlist_count {
+    my $self = shift;
+    $self->{session}->update_waitlist_count($self, @_);
+}
+
+sub set_place {
+    my ($self, $place) = @_;
+    $self->edit(place => $place->id);
+}
+
+sub set_group {
+    my ($self, $group) = @_;
+    $self->edit(series => $group->id);
+}
+
+sub add_owner {
+    my ($self, $user) = @_;
+    $self->{session}->add_owner_to_event($self, $user);
+}
+
+sub questionnaire {
+    my $self = shift;
+    return $self->{questionnaire} ||= $self->{session}->fetch_questionnaire_by_event($self);
+}
+
+sub refetch {
+    my $self = shift;
+    $self->{session}->refetch_event($self);
 }
 
 1;

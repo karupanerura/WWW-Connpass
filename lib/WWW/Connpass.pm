@@ -5,7 +5,6 @@ use warnings;
 
 our $VERSION = "0.01";
 
-use LWP::UserAgent;
 use WWW::Connpass::Session;
 
 sub new {
