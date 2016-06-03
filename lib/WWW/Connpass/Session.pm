@@ -154,7 +154,7 @@ sub register_place {
     _check_response_error_or_throw($res);
 
     my $data = $_JSON->decode($res->decoded_content);
-    return WWW::Connpass::Event::Place->new(session => $self, place => $data);
+    return WWW::Connpass::Place->new(session => $self, place => $data);
 }
 
 sub add_owner_to_event {
