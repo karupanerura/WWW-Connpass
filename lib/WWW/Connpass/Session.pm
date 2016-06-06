@@ -14,6 +14,8 @@ use WWW::Connpass::Group;
 use WWW::Connpass::Place;
 use WWW::Connpass::User;
 
+use constant DEBUG => $ENV{WWW_CONNPASS_DEBUG};
+
 my $_JSON = JSON->new->utf8;
 
 sub new {
@@ -44,7 +46,7 @@ sub _check_response_error_or_throw {
     my $res = shift;
     unless ($res->is_success) {
         my $message = sprintf '[ERROR] %d %s: %s', $res->code, $res->message, $res->decoded_content;
-        $message = "=REQUEST\n".$res->request->as_string."\nRESPONSE=\n".$res->as_string if $ENV{DEBUG};
+        $message = "=REQUEST\n".$res->request->as_string."\nRESPONSE=\n".$res->as_string if DEBUG;
         local $Carp::CarpLevel = $Carp::CarpLevel + 1;
         croak $message;
     }

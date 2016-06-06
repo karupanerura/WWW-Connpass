@@ -8,6 +8,8 @@ use Time::HiRes qw/gettimeofday tv_interval/;
 use HTTP::Request;
 use JSON 2;
 
+use constant DEBUG => $ENV{WWW_CONNPASS_DEBUG};
+
 my $_JSON = JSON->new->utf8;
 
 sub new {
@@ -26,6 +28,13 @@ sub request {
         Time::HiRes::sleep $self->{_interval} - $sec if $sec < $self->{_interval};
     }
     my $res = $self->SUPER::request(@_);
+    if (DEBUG) {
+        my $req = $res->request;
+        warn "============== DEBUG ==============";
+        warn $req->as_string;
+        warn $res->as_string;
+        warn "==============  END  ==============";
+    }
     $self->{_last_req_at} = [gettimeofday];
     return $res;
 }
