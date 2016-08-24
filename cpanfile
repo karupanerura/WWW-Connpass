@@ -7,7 +7,7 @@ requires 'URI';
 requires 'WWW::Mechanize';
 requires 'Web::Query';
 requires 'parent';
-requires 'perl', '5.008001';
+requires 'perl', '5.012000';
 
 on configure => sub {
     requires 'Module::Build::Tiny', '0.035';
