@@ -45,6 +45,7 @@
             "HTTP::Request" : "0",
             "JSON" : "2",
             "Module::Load" : "0",
+            "Text::CSV_XS" : "0",
             "Time::HiRes" : "0",
             "URI" : "0",
             "WWW::Mechanize" : "0",

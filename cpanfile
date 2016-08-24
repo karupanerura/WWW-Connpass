@@ -2,6 +2,7 @@ requires 'HTTP::Request';
 requires 'JSON', '2';
 requires 'Module::Load';
 requires 'Time::HiRes';
+requires 'Text::CSV_XS';
 requires 'URI';
 requires 'WWW::Mechanize';
 requires 'Web::Query';

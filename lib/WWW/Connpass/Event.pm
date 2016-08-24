@@ -83,6 +83,11 @@ sub questionnaire {
     return $self->{questionnaire} ||= $self->{session}->fetch_questionnaire_by_event($self);
 }
 
+sub participants {
+    my $self = shift;
+    return $self->{participants} ||= $self->{session}->fetch_participants_info($self);
+}
+
 sub refetch {
     my $self = shift;
     $self->{session}->refetch_event($self);

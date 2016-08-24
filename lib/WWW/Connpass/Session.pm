@@ -4,12 +4,14 @@ use warnings;
 
 use Carp qw/croak/;
 use Web::Query qw/wq/;
+use Text::CSV_XS;
 use JSON 2;
 use URI;
 
 use WWW::Connpass::Agent;
 use WWW::Connpass::Event;
 use WWW::Connpass::Event::Questionnaire;
+use WWW::Connpass::Event::Participants;
 use WWW::Connpass::Group;
 use WWW::Connpass::Place;
 use WWW::Connpass::User;
@@ -251,6 +253,47 @@ sub fetch_organized_groups {
     });
 
     return map { WWW::Connpass::Group->new(session => $self, group => $_) } @$groups;
+}
+
+sub fetch_participants_info {
+    my ($self, $event) = @_;
+    my $uri = sprintf 'http://connpass.com/event/%d/participants_csv/', $event->id;
+
+    my $res = $self->{mech}->get($uri);
+    _check_response_error_or_throw($res);
+
+    # HTTP::Response
+    my $content = $res->decoded_content;
+
+    my $csv = Text::CSV_XS->new({ binary => 1, decode_utf8 => 0, eol => "\r\n", auto_diag => 1 });
+
+    my @questions = $event->questionnaire->questions;
+    my @params = qw/waitlist_name username nickname comment registration attendance/;
+    push @params => map { 'answer_'.$_ } keys @questions;
+    push @params => qw/updated_at receipt_id/;
+
+    my @lines = split /\r\n/, $content;
+    my %label; @label{@params} = do {
+        my $header = shift @lines;
+        my $success = $csv->parse($header);
+        die "Invalid CSV syntax: $header" unless $success;
+        $csv->fields;
+    };
+
+    my @rows;
+    for my $line (@lines) {
+        my $success = $csv->parse($line);
+        die "Invalid CSV syntax: $line" unless $success;
+
+        my %row;
+        @row{@params} = $csv->fields;
+        push @rows => \%row;
+    }
+
+    return WWW::Connpass::Event::Participants->new(
+        label => \%label,
+        rows  => \@rows,
+    );
 }
 
 1;
