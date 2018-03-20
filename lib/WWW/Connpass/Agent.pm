@@ -18,6 +18,7 @@ sub new {
     my $self = $class->SUPER::new(%args);
     $self->{_interval}    = $interval;
     $self->{_last_req_at} = undef;
+    $self->agent($args{user_agent}) if exists $args{user_agent};
     return $self;
 }
 
