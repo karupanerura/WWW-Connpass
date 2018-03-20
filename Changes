@@ -2,6 +2,8 @@ Revision history for Perl extension WWW-Connpass
 
 {{$NEXT}}
 
+    - adjust request for current connpass.com
+
 0.03 2016-08-24T01:48:04Z
 
     - fixed bugs
