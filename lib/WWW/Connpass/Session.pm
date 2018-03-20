@@ -57,11 +57,20 @@ sub _check_response_error_or_throw {
 }
 
 sub new_event {
-    my ($self, $title) = @_;
+    my ($self, $title, $opts) = @_;
+    $opts ||= {};
 
-    my $res = $self->{mech}->request_like_xhr(POST => 'https://connpass.com/api/event/', {
-        title => $title,
-        place => undef,
+    # pre-request (for referer check)
+    $self->{mech}->get($opts->{group} ? $opts->{group}->url : 'https://connpass.com/dashboard/');
+
+    my $url = $opts->{group} ? URI->new($opts->{group}->url) : URI->new('https://connpass.com/');
+    $url->scheme('https');
+    $url->path('/api/event/');
+
+    my $res = $self->{mech}->request_like_xhr(POST => $url->as_string, {
+        title  => $title,
+        place  => undef,
+        $opts->{group} ? (series => $opts->{group}->id) : (),
     });
     _check_response_error_or_throw($res);
 
@@ -86,10 +95,25 @@ sub refetch_event {
     return $self->fetch_event_by_id($event->id);
 }
 
+sub _update_event_pre_flight_request {
+    my ($self, $event) = @_;
+
+    # pre-request (for referer check)
+    $self->{mech}->get(sprintf 'https://connpass.com/event/%d/edit/', $event->id);
+}
+
+sub _update_questionnaire_pre_flight_request {
+    my ($self, $questionnaire) = @_;
+
+    # pre-request (for referer check)
+    $self->{mech}->get(sprintf 'https://connpass.com/event/%d/edit/form/', $questionnaire->event);
+}
+
 sub update_event {
     my ($self, $event, $diff) = @_;
     my $uri = sprintf 'https://connpass.com/api/event/%d', $event->id;
 
+    $self->_update_event_pre_flight_request($event);
     my $res = $self->{mech}->request_like_xhr(PUT => $uri, {
         %{ $event->raw_data },
         $event->place ? (
@@ -110,6 +134,8 @@ sub update_waitlist_count {
     push @update => map { $_->raw_data } grep { $_->is_new } @waitlist_count;
 
     my $uri = sprintf 'https://connpass.com/api/event/%d/participation_type/', $event->id;
+
+    $self->_update_event_pre_flight_request($event);
     my $res = $self->{mech}->request_like_xhr(PUT => $uri, \@update);
     _check_response_error_or_throw($res);
 
@@ -142,6 +168,8 @@ sub update_questionnaire {
 
     my $method = $questionnaire->is_new ? 'POST' : 'PUT';
     my $uri = sprintf 'https://connpass.com/api/question/%d', $questionnaire->event;
+
+    $self->_update_questionnaire_pre_flight_request($questionnaire);
     my $res = $self->{mech}->request_like_xhr($method => $uri, {
         %{ $questionnaire->raw_data },
         questions => [map { $_->raw_data } @question],
@@ -164,6 +192,8 @@ sub register_place {
 
 sub add_owner_to_event {
     my ($self, $event, $user) = @_;
+    $self->_update_event_pre_flight_request($event);
+
     my $uri = sprintf 'https://connpass.com/api/event/%d/owner/%d', $event->id, $user->id;
     my $res = $self->{mech}->request_like_xhr(POST => $uri, { id => $user->id });
     _check_response_error_or_throw($res);
