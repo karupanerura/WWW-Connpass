@@ -67,6 +67,9 @@ sub request_like_xhr {
     my $req = HTTP::Request->new($method, $url, [
         'Content-Type'     => 'application/json',
         'Content-Length'   => length $content,
+        'Accept'           => 'application/json,text/javascript',
+        'Accept-Language'  => 'en-US',
+        'Origin'           => 'https://connpass.com',
         'X-CSRFToken'      => $self->_csrf_token(),
         'X-Requested-With' => 'XMLHttpRequest',
     ], $content);
