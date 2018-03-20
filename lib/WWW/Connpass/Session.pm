@@ -90,6 +90,19 @@ sub fetch_event_by_id {
     return WWW::Connpass::Event->new(session => $self, event => $data);
 }
 
+sub fetch_event_owners {
+    my ($self, $event) = @_;
+    $self->_update_event_pre_flight_request($event);
+
+    my $uri = sprintf 'https://connpass.com/api/event/%d/owner/', $event->id;
+    my $res = $self->{mech}->get($uri);
+    return if $res->code == 404;
+    _check_response_error_or_throw($res);
+
+    my $data = $_JSON->decode($res->decoded_content);
+    return map { WWW::Connpass::User->new(user => $_) } @$data;
+}
+
 sub refetch_event {
     my ($self, $event) = @_;
     return $self->fetch_event_by_id($event->id);
