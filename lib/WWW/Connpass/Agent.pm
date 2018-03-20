@@ -19,6 +19,7 @@ sub new {
     $self->{_interval}    = $interval;
     $self->{_last_req_at} = undef;
     $self->agent($args{user_agent}) if exists $args{user_agent};
+    $self->add_header('Accept-Encoding' => 'identity') if DEBUG;
     return $self;
 }
 
