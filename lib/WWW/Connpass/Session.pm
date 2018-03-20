@@ -24,6 +24,7 @@ sub new {
     my ($class, $user, $pass, $opt) = @_;
 
     my $mech = WWW::Connpass::Agent->new(%$opt, cookie_jar => {});
+    $mech->get('https://connpass.com/');
     $mech->get('https://connpass.com/login/');
     $mech->form_id('login_form');
     $mech->set_fields(username => $user, password => $pass);
